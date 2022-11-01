@@ -1,6 +1,6 @@
 [![GitHub release](https://img.shields.io/github/v/release/bodgit/srp)](https://github.com/bodgit/srp/releases)
 [![Build Status](https://img.shields.io/github/workflow/status/bodgit/srp/build)](https://github.com/bodgit/srp/actions?query=workflow%3Abuild)
-[![Coverage Status](https://coveralls.io/repos/github/bodgit/srp/badge.svg?branch=master)](https://coveralls.io/github/bodgit/srp?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/bodgit/srp/badge.svg?branch=main)](https://coveralls.io/github/bodgit/srp?branch=main)
 [![Go Report Card](https://goreportcard.com/badge/github.com/bodgit/srp)](https://goreportcard.com/report/github.com/bodgit/srp)
 [![GoDoc](https://godoc.org/github.com/bodgit/srp?status.svg)](https://godoc.org/github.com/bodgit/srp)
 ![Go version](https://img.shields.io/badge/Go-1.19-brightgreen.svg)
