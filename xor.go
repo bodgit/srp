@@ -1,4 +1,4 @@
-//go:build 1.20
+//go:build go1.20
 
 package srp
 
