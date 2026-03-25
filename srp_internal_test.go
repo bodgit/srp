@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/bodgit/srp/internal/rfc2945"
 	"github.com/bodgit/srp/internal/rfc5054"
 	"github.com/bodgit/srp/internal/util"
 	"github.com/stretchr/testify/assert"
@@ -144,4 +145,24 @@ func TestSRP_computeServerS(t *testing.T) {
 		new(big.Int).SetBytes(rfc5054.B),
 		new(big.Int).SetBytes(rfc5054.U),
 		new(big.Int).SetBytes(rfc5054.V)).Bytes())
+}
+
+func TestSRP_computeM1(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, rfc2945.M1, newSRP().computeM1(
+		new(big.Int).SetBytes(rfc5054.XA),
+		new(big.Int).SetBytes(rfc5054.XB),
+		newSRP().computeK(new(big.Int).SetBytes(rfc5054.PremasterSecret)),
+		rfc5054.Identity,
+		rfc5054.Salt))
+}
+
+func TestSRP_computeM2(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, rfc2945.M2, newSRP().computeM2(
+		new(big.Int).SetBytes(rfc5054.XA),
+		rfc2945.M1,
+		newSRP().computeK(new(big.Int).SetBytes(rfc5054.PremasterSecret))))
 }
