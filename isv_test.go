@@ -7,8 +7,10 @@ import (
 
 	"github.com/bodgit/srp"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
+//nolint:gochecknoglobals
 var isv = []byte{0x00, 0x01, 0x01, 0x00, 0x01, 0x02, 0x00, 0x01, 0x03}
 
 func TestISV_MarshalBinary(t *testing.T) {
@@ -135,7 +137,7 @@ func TestISV_UnmarshalBinary(t *testing.T) {
 
 		err := i.UnmarshalBinary(table.b)
 
-		assert.ErrorIs(t, err, table.err)
+		require.ErrorIs(t, err, table.err)
 
 		if err == nil {
 			assert.Equal(t, table.identity, i.Identity)

@@ -1,3 +1,8 @@
+// Package srp is an implementation of SRP-6a as documented in [RFC 5054] and
+// [RFC 2945].
+//
+// [RFC 5054]: https://www.rfc-editor.org/rfc/rfc5054
+// [RFC 2945]: https://www.rfc-editor.org/rfc/rfc2945
 package srp
 
 import (
@@ -50,14 +55,57 @@ func NewSRP(hash crypto.Hash, group *Group, options ...func(*SRP) error) (*SRP, 
 	return s, nil
 }
 
-func (s *SRP) setOption(options ...func(*SRP) error) error {
-	for _, option := range options {
-		if err := option(s); err != nil {
-			return err
-		}
+// HashBytes hashes each passed byte slice and returns the digest.
+func (s *SRP) HashBytes(a ...[]byte) []byte {
+	h := s.h.New()
+
+	for _, z := range a {
+		_, _ = h.Write(z)
 	}
 
-	return nil
+	return h.Sum(nil)
+}
+
+// HashInt hashes each passed byte slice and returns the digest as a big.Int.
+func (s *SRP) HashInt(a ...[]byte) *big.Int {
+	return new(big.Int).SetBytes(s.HashBytes(a...))
+}
+
+// NewISV creates a new ISV containing the identity, salt and verifier.
+func (s *SRP) NewISV(identity, password []byte) (*ISV, error) {
+	salt, err := randBytes(s.Group().Size)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ISV{
+		Identity: identity,
+		Salt:     salt,
+		Verifier: s.computeV(s.computeX(identity, password, salt)).Bytes(),
+	}, nil
+}
+
+// NewClient creates a new Client using the identity and password.
+func (s *SRP) NewClient(identity, password []byte) (*Client, error) {
+	a, err := randBigInt(s.Group().Size)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{
+		s:        s,
+		identity: identity,
+		password: password,
+		a:        a,
+		xA:       s.computeA(a),
+	}, nil
+}
+
+// NewServer creates a new Server using the ISV and the client public value.
+func (s *SRP) NewServer(i *ISV, xA []byte) (*Server, error) {
+	server := new(Server)
+
+	return server, server.Reset(s, i, xA)
 }
 
 // K overrides the default function for computing the multiplier.
@@ -105,6 +153,16 @@ func (s *SRP) SetU(f func(*SRP, *big.Int, *big.Int) *big.Int) error {
 // Group returns the Group in use.
 func (s *SRP) Group() *Group {
 	return s.g
+}
+
+func (s *SRP) setOption(options ...func(*SRP) error) error {
+	for _, option := range options {
+		if err := option(s); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *SRP) multiplier() *big.Int {
@@ -186,57 +244,4 @@ func (s *SRP) computeM1(xA, xB *big.Int, xK, identity, salt []byte) []byte {
 func (s *SRP) computeM2(xA *big.Int, m1, xK []byte) []byte {
 	// M2 = H(A | M | K)
 	return s.HashBytes(xA.Bytes(), m1, xK)
-}
-
-// HashBytes hashes each passed byte slice and returns the digest.
-func (s *SRP) HashBytes(a ...[]byte) []byte {
-	h := s.h.New()
-
-	for _, z := range a {
-		_, _ = h.Write(z)
-	}
-
-	return h.Sum(nil)
-}
-
-// HashInt hashes each passed byte slice and returns the digest as a big.Int.
-func (s *SRP) HashInt(a ...[]byte) *big.Int {
-	return new(big.Int).SetBytes(s.HashBytes(a...))
-}
-
-// NewISV creates a new ISV containing the identity, salt and verifier.
-func (s *SRP) NewISV(identity, password []byte) (*ISV, error) {
-	salt, err := randBytes(s.Group().Size)
-	if err != nil {
-		return nil, err
-	}
-
-	return &ISV{
-		Identity: identity,
-		Salt:     salt,
-		Verifier: s.computeV(s.computeX(identity, password, salt)).Bytes(),
-	}, nil
-}
-
-// NewClient creates a new Client using the identity and password.
-func (s *SRP) NewClient(identity, password []byte) (*Client, error) {
-	a, err := randBigInt(s.Group().Size)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Client{
-		s:        s,
-		identity: identity,
-		password: password,
-		a:        a,
-		xA:       s.computeA(a),
-	}, nil
-}
-
-// NewServer creates a new Server using the ISV and the client public value.
-func (s *SRP) NewServer(i *ISV, xA []byte) (*Server, error) {
-	server := new(Server)
-
-	return server, server.Reset(s, i, xA)
 }

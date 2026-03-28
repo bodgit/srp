@@ -11,8 +11,9 @@ import (
 	"github.com/bodgit/srp/internal/util"
 )
 
+//nolint:gochecknoglobals
 var cognitoGroups = map[int]*srp.Group{
-	3072: util.Must(srp.NewGroup(2, 3072, rfc5054.Hex3072)), //nolint:gomnd
+	3072: util.Must(srp.NewGroup(2, 3072, rfc5054.Hex3072)),
 }
 
 // GetGroup returns the AWS Cognito group for the prime of n bits.
@@ -28,14 +29,14 @@ func GetGroup(n int) (*srp.Group, error) {
 // NewSRP returns a new srp.SRP struct with the Cognito-specific options
 // already set.
 func NewSRP() (*srp.SRP, error) {
-	//nolint:gomnd,wrapcheck
+	//nolint:wrapcheck
 	return srp.NewSRP(crypto.SHA256, util.Must(GetGroup(3072)), srp.K(Multiplier), srp.U(ComputeU), srp.X(ComputeX))
 }
 
 // Pad prepends a zero byte to slice b if the first byte is greater than or
 // equal to 0x80.
 func Pad(b []byte) []byte {
-	if b[0] >= 0x80 { //nolint:gomnd
+	if b[0] >= 0x80 {
 		b = append([]byte{0x00}, b...)
 	}
 

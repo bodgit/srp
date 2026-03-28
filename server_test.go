@@ -26,7 +26,7 @@ func TestServer_MarshalBinary(t *testing.T) {
 	b, err := server.MarshalBinary()
 
 	assert.NotNil(t, b)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 }
 
 func TestServer_UnmarshalBinary(t *testing.T) {

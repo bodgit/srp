@@ -1,5 +1,6 @@
 package util
 
+// Must will panic if err is non-nil.
 func Must[T any](v T, err error) T { //nolint:ireturn
 	if err != nil {
 		panic(err)

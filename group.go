@@ -15,14 +15,15 @@ type Group struct {
 	Size int
 }
 
+//nolint:gochecknoglobals
 var rfcGroups = map[int]*Group{
-	1024: util.Must(NewGroup(2, 1024, rfc5054.Hex1024)),  //nolint:gomnd
-	1536: util.Must(NewGroup(2, 1536, rfc5054.Hex1536)),  //nolint:gomnd
-	2048: util.Must(NewGroup(2, 2048, rfc5054.Hex2048)),  //nolint:gomnd
-	3072: util.Must(NewGroup(5, 3072, rfc5054.Hex3072)),  //nolint:gomnd
-	4096: util.Must(NewGroup(5, 4096, rfc5054.Hex4096)),  //nolint:gomnd
-	6144: util.Must(NewGroup(5, 6144, rfc5054.Hex6144)),  //nolint:gomnd
-	8192: util.Must(NewGroup(19, 8192, rfc5054.Hex8192)), //nolint:gomnd
+	1024: util.Must(NewGroup(2, 1024, rfc5054.Hex1024)),
+	1536: util.Must(NewGroup(2, 1536, rfc5054.Hex1536)),
+	2048: util.Must(NewGroup(2, 2048, rfc5054.Hex2048)),
+	3072: util.Must(NewGroup(5, 3072, rfc5054.Hex3072)),
+	4096: util.Must(NewGroup(5, 4096, rfc5054.Hex4096)),
+	6144: util.Must(NewGroup(5, 6144, rfc5054.Hex6144)),
+	8192: util.Must(NewGroup(19, 8192, rfc5054.Hex8192)),
 }
 
 // NewGroup returns a Group with the generator g, and a prime of size bits set
@@ -36,7 +37,7 @@ func NewGroup(g int64, size int, s string) (*Group, error) {
 	group := &Group{
 		G:    big.NewInt(g),
 		N:    new(big.Int).SetBytes(b),
-		Size: size >> 3, //nolint:gomnd
+		Size: size >> 3,
 	}
 
 	return group, nil
