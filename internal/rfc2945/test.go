@@ -1,5 +1,7 @@
 // Package rfc2945 provides test vectors documented in
 // RFC 2945.
+//
+//nolint:gochecknoglobals
 package rfc2945
 
 import "github.com/bodgit/srp/internal/util"
