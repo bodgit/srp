@@ -1,3 +1,4 @@
+//nolint:gochecknoglobals
 package rfc5054
 
 import "github.com/bodgit/srp/internal/util"

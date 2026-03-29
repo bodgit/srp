@@ -11,9 +11,7 @@ import (
 
 func randBytes(n int) ([]byte, error) {
 	b := make([]byte, n)
-
-	_, err := io.ReadFull(rand.Reader, b)
-	if err != nil {
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
 		return nil, fmt.Errorf("unable to read random bytes: %w", err)
 	}
 
@@ -34,6 +32,7 @@ func writeBytes(w io.Writer, b []byte) error {
 		return ErrTooBig
 	}
 
+	//nolint:gosec
 	if err := binary.Write(w, binary.BigEndian, uint16(len(b))); err != nil {
 		return fmt.Errorf("unable to write length: %w", err)
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/bodgit/srp/internal/rfc5054"
 	"github.com/bodgit/srp/internal/util"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func newSRP() *srp.SRP {
@@ -26,9 +27,9 @@ func TestNewSRP(t *testing.T) {
 	}))
 
 	assert.NotNil(t, s)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
-	errTest := errors.New("test") //nolint:goerr113
+	errTest := errors.New("test") //nolint:err113
 
 	s, err = srp.NewSRP(crypto.SHA1, util.Must(srp.GetGroup(1024)), func(*srp.SRP) error {
 		return errTest
@@ -44,9 +45,9 @@ func TestNewISV(t *testing.T) {
 	s := newSRP()
 	i := util.Must(s.NewISV(rfc5054.Identity, rfc5054.Password))
 
-	assert.Equal(t, len(rfc5054.Identity), len(i.Identity))
-	assert.Equal(t, s.Group().Size, len(i.Salt))
-	assert.Equal(t, s.Group().Size, len(i.Verifier))
+	assert.Len(t, i.Identity, len(rfc5054.Identity))
+	assert.Len(t, i.Salt, s.Group().Size)
+	assert.Len(t, i.Verifier, s.Group().Size)
 }
 
 func TestNewClient(t *testing.T) {
@@ -55,7 +56,7 @@ func TestNewClient(t *testing.T) {
 	s := newSRP()
 	client := util.Must(s.NewClient(rfc5054.Identity, rfc5054.Password))
 
-	assert.Equal(t, s.Group().Size, len(client.A()))
+	assert.Len(t, client.A(), s.Group().Size)
 }
 
 func TestNewServer(t *testing.T) {
@@ -64,7 +65,7 @@ func TestNewServer(t *testing.T) {
 	s := newSRP()
 	server := util.Must(s.NewServer(util.Must(s.NewISV(rfc5054.Identity, rfc5054.Password)), rfc5054.XA))
 
-	assert.Equal(t, s.Group().Size, len(server.B()))
+	assert.Len(t, server.B(), s.Group().Size)
 }
 
 func TestHandshake(t *testing.T) {
